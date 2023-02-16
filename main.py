@@ -32,6 +32,7 @@ def server():
     score=0
     mise=0
     miseAdv=0
+    nombreDe=0
     scoreAdv=0
 
     # Si 'win'==0, le joueur a perdu; si 'win'==1, le joueur a gagne; et si'win'==2, le joueur arrete la partie
@@ -39,10 +40,7 @@ def server():
 
     end=False
 
-
-
-
-    # petite manip pour obtenir l'addresse local d'un pc sous Unix et Windows --> https://stackoverflow.com/a/166589
+    # petite manip pour obtenir l'addresse locale d'un pc sous Unix et Windows --> https://stackoverflow.com/a/166589
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     local_ip = s.getsockname()[0]
@@ -150,6 +148,7 @@ def server():
 
         # On lance 1 de
         if(reponse==1):
+            nombreDe=1
             print("\n[-] Lancement du dé...")
             t.sleep(r.randint(10,15)/10)
 
@@ -170,6 +169,7 @@ def server():
         # On lance 2 des
         elif(reponse==2):
             print("\n[-] Lancement des dés...")
+            nombreDe=2
             t.sleep(r.randint(10,15)/10)
             d1=r.randint(1,6)
             d2=r.randint(1,6)
@@ -192,7 +192,7 @@ def server():
 
 
         # On envoie le score actuel au client
-        message = score
+        message = str(score)+";"+str(nombreDe)
         conn.send(str(message).encode())
 
 
@@ -207,7 +207,10 @@ def server():
                 win=2
                 break
             # On met à jour son score.
-            scoreAdv=int(data)
+
+            print(str(data)[:data.find(";")])
+
+            scoreAdv=int(str(data)[:data.find(";")])
             break
 
 
@@ -243,16 +246,11 @@ def server():
 
 def client():
 
-    import socket
-    import random
-    import time
-
-    # Quitter l'application
-    from sys import exit
+    host = str(input("Entrez l'addresse de l'hote >"))
+    port = 2345
 
     t = time
     r = random
-
 
     # définition des variables
     d1=0
@@ -268,17 +266,12 @@ def client():
     end=False
 
 
-    host = str(input("Entrez l'addresse de l'hote >"))
-    port = 2345
-
     # Connexion à lhôte
     client_socket = socket.socket()
     client_socket.connect((host, port))
 
     message = "Test"
     client_socket.send(message.encode())
-
-
 
 
 
@@ -330,6 +323,7 @@ def client():
     d2=0
     score=0
     win=3
+    nombreDe=0
 
     # Premier tour, le serveur à la main.
     print("\n\n[-] L'adversaire joue...\n\n")
@@ -337,7 +331,8 @@ def client():
         data = client_socket.recv(1024).decode()
         if(not data):
             break
-        scoreAdv=int(data)
+        print("l'adversaire à lancé", str(data)[data.find(";")+1:],"dés.")
+        scoreAdv=int(str(data)[:data.find(";")])
         break
 
 
@@ -377,6 +372,7 @@ def client():
         # On lance 1 de
         if(reponse==1):
             print("\n[-] Lancement du dé...")
+            nombreDe=1
             t.sleep(r.randint(10,15)/10)
 
             d1=r.randint(1,6)
@@ -393,6 +389,7 @@ def client():
         # On lance 2 des
         elif(reponse==2):
             print("\n[-] Lancement des dés...")
+            nombreDe=2
             t.sleep(r.randint(10,15)/10)
             d1=r.randint(1,6)
             d2=r.randint(1,6)
@@ -415,7 +412,7 @@ def client():
 
 
         # On envoie le score actuel au client
-        message = score
+        message = str(score)+";"+str(nombreDe)
         client_socket.send(str(message).encode())
 
 
@@ -429,7 +426,8 @@ def client():
             if(str(data)=="win2"):
                 win=2
                 break
-            scoreAdv=int(data)
+            print("l'adversaire à lancé", str(data)[data.find(";")+1:],"dés.")
+            scoreAdv=int(str(data)[:data.find(";")])
             break
 
         if(score>21):
