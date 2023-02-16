@@ -209,7 +209,7 @@ def server():
             # On met à jour son score.
 
             #print(str(data)[:data.find(";")])
-
+            print("l'adversaire à lancé", str(data)[data.find(";")+1:],"dés.")
             scoreAdv=int(str(data)[:data.find(";")])
             break
 
@@ -427,7 +427,6 @@ def client():
             if(str(data)=="win2"):
                 win=2
                 break
-            print("aaaaaaa")
             print("l'adversaire à lancé", str(data)[data.find(";")+1:],"dés.")
             scoreAdv=int(str(data)[:data.find(";")])
             break
