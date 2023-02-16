@@ -331,6 +331,7 @@ def client():
         data = client_socket.recv(1024).decode()
         if(not data):
             break
+        print("aaa")
         print("l'adversaire à lancé", str(data)[data.find(";")+1:],"dés.")
         scoreAdv=int(str(data)[:data.find(";")])
         break
