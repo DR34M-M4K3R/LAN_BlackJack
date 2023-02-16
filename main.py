@@ -208,7 +208,7 @@ def server():
                 break
             # On met à jour son score.
 
-            print(str(data)[:data.find(";")])
+            #print(str(data)[:data.find(";")])
 
             scoreAdv=int(str(data)[:data.find(";")])
             break
